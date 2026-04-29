@@ -271,9 +271,7 @@ public abstract class PipeType<T, D extends AbstractPipeTypeData<T>> {
                 return isNormal;
             }
 
-            if (isNormal) {
-                noNormalFilters = false;
-            }
+            noNormalFilters |= isNormal;
         }
 
         return noNormalFilters;
