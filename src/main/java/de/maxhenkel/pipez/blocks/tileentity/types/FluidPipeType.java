@@ -24,7 +24,6 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FluidPipeType extends PipeType<Fluid, FluidData> {
 
@@ -134,22 +133,8 @@ public class FluidPipeType extends PipeType<Fluid, FluidData> {
         }
     }
 
-    private boolean canInsert(HolderLookup.Provider provider, PipeTileEntity.Connection connection, FluidResource resource, List<Filter<?, ?>> filters) {
-        for (Filter<?, Fluid> filter : filters.stream().map(filter -> (Filter<?, Fluid>) filter).filter(Filter::isInvert).filter(f -> matchesConnection(connection, f)).collect(Collectors.toList())) {
-            if (matches(provider, filter, resource)) {
-                return false;
-            }
-        }
-        List<Filter<?, Fluid>> collect = filters.stream().map(filter -> (Filter<?, Fluid>) filter).filter(f -> !f.isInvert()).filter(f -> matchesConnection(connection, f)).collect(Collectors.toList());
-        if (collect.isEmpty()) {
-            return true;
-        }
-        for (Filter<?, Fluid> filter : collect) {
-            if (matches(provider, filter, resource)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean canInsert(HolderLookup.Provider provider, PipeTileEntity.Connection connection, FluidResource stack, List<Filter<?, ?>> filters) {
+        return super.canInsertProto(provider, connection, stack, filters, this::matches);
     }
 
     private boolean matches(HolderLookup.Provider provider, Filter<?, Fluid> filter, FluidResource resource) {
